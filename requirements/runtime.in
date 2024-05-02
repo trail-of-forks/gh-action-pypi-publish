@@ -1,4 +1,7 @@
-twine
+# NOTE: Temporarily pulling directly from GitHub for the attestations feature,
+# which is not yet released.
+# See: https://github.com/pypa/twine/issues/1094
+twine @ git+https://github.com/pypa/twine@5d17a43dec622d6f4fc490937baad3db4b9a8e29
 
 # NOTE: Used to detect an ambient OIDC credential for OIDC publishing.
 id ~= 1.0
