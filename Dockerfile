@@ -13,6 +13,9 @@ ENV PIP_ROOT_USER_ACTION ignore
 ENV PATH "/root/.local/bin:${PATH}"
 ENV PYTHONPATH "/root/.local/lib/python3.12/site-packages"
 
+# NOTE: Temporary; to be removed once a new twine is released.
+RUN apt-get update && apt-get install -y git
+
 COPY requirements requirements
 RUN \
   PIP_CONSTRAINT=requirements/runtime-prerequisites.txt \
