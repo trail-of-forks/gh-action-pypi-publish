@@ -121,7 +121,7 @@ def die(msg: str) -> NoReturn:
 
 
 def debug(msg: str):
-    print(f"::debug::{msg.title()}", file=sys.stderr)
+    print(f"::debug::{msg}", file=sys.stderr)
 
 
 def get_normalized_input(name: str) -> str | None:
