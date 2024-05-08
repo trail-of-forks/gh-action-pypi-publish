@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from pathlib import Path
@@ -7,6 +8,10 @@ import id  # pylint: disable=redefined-builtin
 from pypi_attestation_models import AttestationPayload
 from sigstore.oidc import IdentityError, IdentityToken, detect_credential
 from sigstore.sign import Signer, SigningContext
+
+# Be very verbose.
+sigstore_logger = logging.getLogger("sigstore")
+sigstore_logger.setLevel(logging.DEBUG)
 
 _GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
 
