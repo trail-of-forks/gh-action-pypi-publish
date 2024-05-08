@@ -59,6 +59,7 @@ def debug(msg: str):
     print(f"::debug::{msg}", file=sys.stderr)
 
 
+# pylint: disable=redefined-outer-name
 def attest_dist(dist: Path, signer: Signer) -> None:
     # We are the publishing step, so there should be no pre-existing publish
     # attestation. The presence of one indicates user confusion.
