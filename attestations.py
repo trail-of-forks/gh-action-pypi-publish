@@ -5,7 +5,7 @@ from typing import NoReturn
 
 import id  # pylint: disable=redefined-builtin
 from pypi_attestation_models import AttestationPayload
-from sigstore.oidc import Issuer
+from sigstore.oidc import IdentityError, IdentityToken, detect_credential
 from sigstore.sign import Signer, SigningContext
 
 _GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
@@ -72,8 +72,9 @@ packages_dir = Path(sys.argv[1])
 
 try:
     # NOTE: audience is always sigstore.
-    oidc_token = id.detect_credential(audience="sigstore")
-except id.IdentityError as identity_error:
+    oidc_token = detect_credential()
+    identity = IdentityToken(oidc_token)
+except IdentityError as identity_error:
     # NOTE: We only perform attestations in trusted publishing flows, so we
     # don't need to re-check for the "PR from fork" error mode, only
     # generic token retrieval errors.
@@ -84,7 +85,6 @@ except id.IdentityError as identity_error:
 dists = [sdist.absolute() for sdist in packages_dir.glob("*.tar.gz")]
 dists.extend(whl.absolute() for whl in packages_dir.glob("*.whl"))
 
-identity = Issuer.production().identity_token()
 with SigningContext.production().signer(identity, cache=True) as signer:
     for dist in dists:
         # This should never really happen, but some versions of GitHub's
