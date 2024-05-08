@@ -50,12 +50,22 @@ def die(msg: str) -> NoReturn:
     sys.exit(1)
 
 
+def debug(msg: str):
+    print(f"::debug::{msg.title()}", file=sys.stderr)
+
+
 def attest_dist(dist: Path, signer: Signer) -> None:
+    # We are the publishing step, so there should be no pre-existing publish
+    # attestation. The presence of one indicates user confusion.
+    attestation_path = Path(f"{dist}.publish.attestation")
+    if attestation_path.is_file():
+        die(f"{dist} already has a publish attestation: {attestation_path}")
+
     payload = AttestationPayload.from_dist(dist)
     attestation = payload.sign(signer)
 
-    attestation_path = Path(f"{dist}.publish.attestation")
     attestation_path.write_text(attestation.model_dump_json())
+    debug(f"saved publish attestation: {dist=} {attestation_path=}")
 
 
 packages_dir = Path(sys.argv[1])
@@ -67,8 +77,8 @@ except id.IdentityError as identity_error:
     # NOTE: We only perform attestations in trusted publishing flows, so we
     # don't need to re-check for the "PR from fork" error mode, only
     # generic token retrieval errors.
-    msg = _TOKEN_RETRIEVAL_FAILED_MESSAGE.format(identity_error=identity_error)
-    die(msg)
+    cause = _TOKEN_RETRIEVAL_FAILED_MESSAGE.format(identity_error=identity_error)
+    die(cause)
 
 # Collect all sdists and wheels.
 dists = [Path(sdist).absolute() for sdist in glob.glob(packages_dir / "*.tar.gz")]
