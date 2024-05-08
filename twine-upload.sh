@@ -80,11 +80,6 @@ if [[ "${INPUT_ATTESTATIONS}" != "false" ]] ; then
 fi
 
 if [[ "${INPUT_USER}" == "__token__" && -z "${INPUT_PASSWORD}" ]] ; then
-    if [[ "${INPUT_ATTESTATIONS}" != "false" ]] ; then
-        echo "::debug::Generating and uploading PEP 740 attestations"
-        # TODO: Do the things here.
-    fi
-
     # No password supplied by the user implies that we're in the OIDC flow;
     # retrieve the OIDC credential and exchange it for a PyPI API token.
     echo "::debug::Authenticating to ${INPUT_REPOSITORY_URL} via Trusted Publishing"
@@ -158,6 +153,15 @@ fi
 
 if [[ ${INPUT_VERBOSE,,} != "false" ]] ; then
     TWINE_EXTRA_ARGS="--verbose $TWINE_EXTRA_ARGS"
+fi
+
+if [[ ${INPUT_ATTESTATIONS,,} != "false" ]] ; then
+    # NOTE: Intentionally placed after `twine check`, to prevent attestation
+    # generation on distributions with invalid metadata.
+    echo "::debug::Generating and uploading PEP 740 attestations"
+    python /app/attestations.py "${INPUT_PACKAGES_DIR%%/}"
+
+    TWINE_EXTRA_ARGS="--attestations $TWINE_EXTRA_ARGS"
 fi
 
 if [[ ${INPUT_PRINT_HASH,,} != "false" || ${INPUT_VERBOSE,,} != "false" ]] ; then
