@@ -12,6 +12,7 @@ from sigstore.sign import Signer, SigningContext
 # Be very verbose.
 sigstore_logger = logging.getLogger("sigstore")
 sigstore_logger.setLevel(logging.DEBUG)
+sigstore_logger.addHandler(logging.StreamHandler())
 
 _GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
 
