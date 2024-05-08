@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 from typing import NoReturn
 
-import id  # pylint: disable=redefined-builtin
 from pypi_attestation_models import AttestationPayload
 from sigstore.oidc import IdentityError, IdentityToken, detect_credential
 from sigstore.sign import Signer, SigningContext
@@ -70,7 +69,7 @@ def attest_dist(dist: Path, signer: Signer) -> None:
     payload = AttestationPayload.from_dist(dist)
     attestation = payload.sign(signer)
 
-    attestation_path.write_text(attestation.model_dump_json())
+    attestation_path.write_text(attestation.model_dump_json(), encoding="utf-8")
     debug(f"saved publish attestation: {dist=} {attestation_path=}")
 
 
