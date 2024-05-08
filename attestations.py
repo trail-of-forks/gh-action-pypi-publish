@@ -5,6 +5,7 @@ from typing import NoReturn
 
 import id  # pylint: disable=redefined-builtin
 from pypi_attestation_models import AttestationPayload
+from sigstore.oidc import Issuer
 from sigstore.sign import Signer, SigningContext
 
 _GITHUB_STEP_SUMMARY = Path(os.getenv("GITHUB_STEP_SUMMARY"))
@@ -83,7 +84,8 @@ except id.IdentityError as identity_error:
 dists = [sdist.absolute() for sdist in packages_dir.glob("*.tar.gz")]
 dists.extend(whl.absolute() for whl in packages_dir.glob("*.whl"))
 
-with SigningContext.production().signer(oidc_token, cache=True) as signer:
+identity = Issuer.production().identity_token()
+with SigningContext.production().signer(identity, cache=True) as signer:
     for dist in dists:
         # This should never really happen, but some versions of GitHub's
         # download-artifact will create a subdirectory with the same name
