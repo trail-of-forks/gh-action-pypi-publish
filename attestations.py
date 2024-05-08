@@ -1,4 +1,3 @@
-import glob
 import os
 import sys
 from pathlib import Path
@@ -81,8 +80,8 @@ except id.IdentityError as identity_error:
     die(cause)
 
 # Collect all sdists and wheels.
-dists = [Path(sdist).absolute() for sdist in glob.glob(packages_dir / "*.tar.gz")]
-dists.extend(Path(whl).absolute() for whl in glob.glob(packages_dir / "*.whl"))
+dists = [sdist.absolute() for sdist in packages_dir.glob("*.tar.gz")]
+dists.extend(whl.absolute() for whl in packages_dir.glob("*.whl"))
 
 with SigningContext.production().signer(oidc_token, cache=True) as signer:
     for dist in dists:
