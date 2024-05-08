@@ -73,30 +73,29 @@ def attest_dist(dist: Path, signer: Signer) -> None:
     debug(f"saved publish attestation: {dist=} {attestation_path=}")
 
 
-if __name__ == "__main__":
-    packages_dir = Path(sys.argv[1])
+packages_dir = Path(sys.argv[1])
 
-    try:
-        # NOTE: audience is always sigstore.
-        oidc_token = detect_credential()
-        identity = IdentityToken(oidc_token)
-    except IdentityError as identity_error:
-        # NOTE: We only perform attestations in trusted publishing flows, so we
-        # don't need to re-check for the "PR from fork" error mode, only
-        # generic token retrieval errors.
-        cause = _TOKEN_RETRIEVAL_FAILED_MESSAGE.format(identity_error=identity_error)
-        die(cause)
+try:
+    # NOTE: audience is always sigstore.
+    oidc_token = detect_credential()
+    identity = IdentityToken(oidc_token)
+except IdentityError as identity_error:
+    # NOTE: We only perform attestations in trusted publishing flows, so we
+    # don't need to re-check for the "PR from fork" error mode, only
+    # generic token retrieval errors.
+    cause = _TOKEN_RETRIEVAL_FAILED_MESSAGE.format(identity_error=identity_error)
+    die(cause)
 
-    # Collect all sdists and wheels.
-    dists = [sdist.absolute() for sdist in packages_dir.glob("*.tar.gz")]
-    dists.extend(whl.absolute() for whl in packages_dir.glob("*.whl"))
+# Collect all sdists and wheels.
+dists = [sdist.absolute() for sdist in packages_dir.glob("*.tar.gz")]
+dists.extend(whl.absolute() for whl in packages_dir.glob("*.whl"))
 
-    with SigningContext.production().signer(identity, cache=True) as signer:
-        for dist in dists:
-            # This should never really happen, but some versions of GitHub's
-            # download-artifact will create a subdirectory with the same name
-            # as the artifact being downloaded, e.g. `dist/foo.whl/foo.whl`.
-            if not dist.is_file():
-                die(f"Path looks like a distribution but is not a file: {dist}")
+with SigningContext.production().signer(identity, cache=True) as signer:
+    for dist in dists:
+        # This should never really happen, but some versions of GitHub's
+        # download-artifact will create a subdirectory with the same name
+        # as the artifact being downloaded, e.g. `dist/foo.whl/foo.whl`.
+        if not dist.is_file():
+            die(f"Path looks like a distribution but is not a file: {dist}")
 
-            attest_dist(dist, signer)
+        attest_dist(dist, signer)
