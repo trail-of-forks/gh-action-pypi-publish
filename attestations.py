@@ -93,4 +93,4 @@ with SigningContext.production().signer(identity, cache=True) as signer:
         if not dist.is_file():
             die(f"Path looks like a distribution but is not a file: {dist}")
 
-        attest_dist(dist)
+        attest_dist(dist, signer)
