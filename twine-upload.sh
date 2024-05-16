@@ -69,6 +69,7 @@ if [[ "${INPUT_ATTESTATIONS}" != "false" ]] ; then
     # user confusion, since attestations (currently) require Trusted Publishing.
     if [[ -n "${INPUT_PASSWORD}" ]] ; then
         echo "${ATTESTATIONS_WITHOUT_TP_WARNING}"
+        INPUT_ATTESTATIONS="false"
     fi
 
     # Setting `attestations: true` with an index other than PyPI or TestPyPI
@@ -76,6 +77,7 @@ if [[ "${INPUT_ATTESTATIONS}" != "false" ]] ; then
     # indices presently.
     if [[ ! "${INPUT_REPOSITORY_URL}" =~ pypi\.org ]] ; then
         echo "${ATTESTATIONS_WRONG_INDEX_WARNING}"
+        INPUT_ATTESTATIONS="false"
     fi
 fi
 
