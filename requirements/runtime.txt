@@ -119,7 +119,7 @@ six==1.16.0
     # via python-dateutil
 tuf==4.0.0
     # via sigstore
-twine @ git+https://github.com/pypa/twine@5d17a43dec622d6f4fc490937baad3db4b9a8e29
+twine==5.1.0
     # via -r runtime.in
 typing-extensions==4.10.0
     # via
